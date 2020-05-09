@@ -1,5 +1,7 @@
+import { Service } from 'typedi'
 import GenericResponse from '../../dto/GenericResponse'
 
+@Service()
 class BaseController {
   protected successResponse = <T>(data: T): GenericResponse<T> => {
     return {
