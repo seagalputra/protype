@@ -2,6 +2,8 @@ import { Service } from 'typedi'
 import { Request, Response, NextFunction } from 'express'
 import { body, validationResult } from 'express-validator'
 
+import GenericResponse from '../../dto/GenericResponse'
+
 @Service()
 class UserAccountValidator {
   rules = () => {
@@ -18,9 +20,9 @@ class UserAccountValidator {
 
     if (errors.isEmpty()) return next()
 
-    return response.status(422).json({
-      errors: errors.array(),
-    })
+    return response
+      .status(422)
+      .json(GenericResponse.errorResponse('Invalid value!'))
   }
 }
 

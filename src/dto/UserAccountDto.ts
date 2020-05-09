@@ -1,7 +1,5 @@
 export class UserAccountResponse {
-  firstName!: string
-  lastName!: string
-  email!: string
+  token!: string
 }
 
 export class UserAccountRequest {

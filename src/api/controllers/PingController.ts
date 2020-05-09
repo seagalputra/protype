@@ -1,12 +1,12 @@
 import { Request, Response } from 'express'
 import { Service } from 'typedi'
 
-import BaseController from './BaseController'
+import GenericResponse from '../../dto/GenericResponse'
 
 @Service()
-class PingController extends BaseController {
+class PingController {
   index = (request: Request, response: Response) => {
-    return response.json(this.successResponse({ message: 'pong' }))
+    return response.json(GenericResponse.successResponse({ message: 'pong' }))
   }
 }
 

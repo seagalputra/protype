@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
 import { Service } from 'typedi'
 
-import BaseController from './BaseController'
+import GenericResponse from '../../dto/GenericResponse'
+
 import {
   UserAccountRequest,
   UserAccountResponse,
@@ -9,11 +10,10 @@ import {
 import UserAccountService from '../../services/UserAccountService'
 
 @Service()
-class UserAccountController extends BaseController {
+class UserAccountController {
   private userAccountService: UserAccountService
 
   constructor(userAccountService: UserAccountService) {
-    super()
     this.userAccountService = userAccountService
   }
 
@@ -23,7 +23,7 @@ class UserAccountController extends BaseController {
     )
 
     return response.json(
-      this.successResponse<UserAccountResponse>(userAccountResponse)
+      GenericResponse.successResponse<UserAccountResponse>(userAccountResponse)
     )
   }
 }
