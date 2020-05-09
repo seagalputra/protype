@@ -2,19 +2,29 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
 
 @Entity()
 class UserAccount {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({
+    name: 'id',
+  })
   id!: number
 
-  @Column()
+  @Column({
+    name: 'first_name',
+  })
   firstName!: string
 
-  @Column()
+  @Column({
+    name: 'last_name',
+  })
   lastName!: string
 
-  @Column()
+  @Column({
+    name: 'email',
+  })
   email!: string
 
-  @Column()
+  @Column({
+    name: 'password',
+  })
   password!: string
 }
 

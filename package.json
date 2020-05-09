@@ -9,7 +9,8 @@
   "scripts": {
     "start": "nodemon src/index.ts",
     "test": "jest",
-    "build": "tsc"
+    "build": "tsc",
+    "typeorm": "ts-node ./node_modules/typeorm/cli.js -f ./src/config/ormconfig.ts"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
