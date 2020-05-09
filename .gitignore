@@ -1,4 +1,5 @@
 node_modules/
 root/
 data/
+build/
 .env

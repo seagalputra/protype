@@ -8,6 +8,10 @@ import {
   UserAccountResponse,
 } from '../../dto/UserAccountDto'
 import UserAccountService from '../../services/UserAccountService'
+import {
+  AuthenticationResponse,
+  AuthenticationRequest,
+} from '../../dto/AuthenticationDto'
 
 @Service()
 class UserAccountController {
@@ -17,14 +21,28 @@ class UserAccountController {
     this.userAccountService = userAccountService
   }
 
-  index = async (request: Request, response: Response) => {
+  userRegistration = async (request: Request, response: Response) => {
     const userAccountResponse: UserAccountResponse = await this.userAccountService.registerUser(
       request.body as UserAccountRequest
     )
 
-    return response.json(
-      GenericResponse.successResponse<UserAccountResponse>(userAccountResponse)
+    return response
+      .status(200)
+      .json(GenericResponse.successResponse(userAccountResponse))
+  }
+
+  userLogin = async (request: Request, response: Response) => {
+    const authenticationResponse: AuthenticationResponse = await this.userAccountService.login(
+      request.body as AuthenticationRequest
     )
+
+    return authenticationResponse.token
+      ? response
+          .status(200)
+          .json(GenericResponse.successResponse(authenticationResponse))
+      : response
+          .status(401)
+          .json(GenericResponse.errorResponse("Password doesn't match"))
   }
 }
 

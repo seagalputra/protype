@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
 import jsonwebtoken, { Secret } from 'jsonwebtoken'
-import { Container, Service } from 'typedi'
+import { Service } from 'typedi'
 
+import UserAccount from '../../models/UserAccount'
 import GenericResponse from '../../dto/GenericResponse'
 import UserAccountService from '../../services/UserAccountService'
 import { UserAccountRequest } from '../../dto/UserAccountDto'
@@ -10,7 +11,13 @@ import config from '../../config'
 
 @Service()
 class AuthenticationMiddleware {
-  authenticate = (request: Request, response: Response, next: NextFunction) => {
+  constructor(private userAccountService: UserAccountService) {}
+
+  authenticate = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
     const token: string | null = this.getTokenFromHeader(request)
 
     if (!token)
@@ -18,21 +25,25 @@ class AuthenticationMiddleware {
         .status(401)
         .json(GenericResponse.errorResponse('Unauthorized'))
 
-    const { secretKey } = config
-    const result = jsonwebtoken.verify(token, secretKey as Secret) as TokenData
-    console.log(result.payload)
+    const result = this.verifyToken(token)
 
-    const userAccountService = Container.get(UserAccountService)
-    const existUser = userAccountService.getUser({
-      email: result.payload,
-    } as UserAccountRequest)
+    try {
+      const existUser: UserAccount = await this.userAccountService.getUser({
+        email: result.payload,
+      } as UserAccountRequest)
 
-    if (!existUser)
+      response.locals.currentUser = existUser
+      return next()
+    } catch (e) {
       return response
         .status(401)
         .json(GenericResponse.errorResponse("User doesn't exist!"))
+    }
+  }
 
-    return next()
+  verifyToken = (token: string): TokenData => {
+    const { secretKey } = config
+    return jsonwebtoken.verify(token, secretKey as Secret) as TokenData
   }
 
   getTokenFromHeader = (request: Request): string | null => {

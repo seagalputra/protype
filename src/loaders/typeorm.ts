@@ -16,6 +16,7 @@ const connectionConfig: ConnectionOptions = {
   database: config.database.name,
   entities: [__dirname + '/../models/*{.ts,.js}'],
   synchronize: true,
+  logging: true,
 }
 
 export default async (): Promise<Connection> => {

@@ -7,6 +7,11 @@ import config from '../config'
 
 import UserAccountRepository from '../repository/UserAccountRepository'
 import { UserAccountRequest, UserAccountResponse } from '../dto/UserAccountDto'
+import {
+  AuthenticationRequest,
+  AuthenticationResponse,
+} from '../dto/AuthenticationDto'
+import UserAccount from '../models/UserAccount'
 
 @Service()
 class UserAccountService {
@@ -26,26 +31,46 @@ class UserAccountService {
       password: hashedPassword,
     })
 
-    const token = this.generateToken(userAccountRequest.email)
+    const token = this.generateToken<String>(userAccountRequest.email)
 
     return {
       token,
     }
   }
 
-  public getUser = async (userAccountRequest: UserAccountRequest) => {
+  public login = async (
+    authenticationRequest: AuthenticationRequest
+  ): Promise<AuthenticationResponse> => {
+    const { email, password } = authenticationRequest
+
+    const user: UserAccount = await this.getUser({
+      email,
+    } as UserAccountRequest)
+
+    const isPasswordMatch = await bcrypt.compare(password, user.password)
+
+    if (!isPasswordMatch) return { token: null }
+
+    const token = this.generateToken(user.email)
+
+    return { token }
+  }
+
+  public getUser = (
+    userAccountRequest: UserAccountRequest
+  ): Promise<UserAccount> => {
     const { email } = userAccountRequest
 
-    const exsistUser = await this.userAccountRepository.findOne(email)
-
-    if (!exsistUser) return null
+    const exsistUser = this.userAccountRepository.findOneOrFail({
+      email,
+    })
 
     return exsistUser
   }
 
   private generateToken = <T>(payload: T) => {
     const { secretKey } = config
-    const expiration = '6h'
+    const expiration = '3h'
 
     return jsonwebtoken.sign({ payload }, secretKey as Secret, {
       expiresIn: expiration,

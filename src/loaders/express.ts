@@ -11,10 +11,10 @@ const expressLoader = async ({ app }: { app: express.Application }) => {
   app.use(bodyParser.json())
   app.use(cors())
   app.use(helmet())
-  app.use(morgan('tiny'))
+  app.use(morgan('common'))
 
   const routes = Container.get(Routes)
-  app.use('/api/v1', routes.initialize())
+  app.use('/api/v1', routes.configure())
 
   return app
 }
